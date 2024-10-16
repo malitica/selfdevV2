@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PlatformService.Data;
 using PlatformService.SyncDataServices.Http;
 
@@ -10,11 +11,20 @@ namespace PlatformService
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
             // Add services to the container.
-            //Switch to sql server later
-            builder.Services.AddDbContext<AppDbContext>(opt =>
-            opt.UseInMemoryDatabase("InMem"));
+            var env = builder.Environment;
+            if (env.IsProduction())
+            {
+                Console.WriteLine("--> Using Sql server Db");
+                builder.Services.AddDbContext<AppDbContext>(opt =>
+                    opt.UseSqlServer(builder.Configuration.GetConnectionString("PlatformsConn")));
+            }
+            else
+            {
+                Console.WriteLine("--> Using InMem Db");
+                builder.Services.AddDbContext<AppDbContext>(opt =>
+                opt.UseInMemoryDatabase("InMem"));
+            }
 
             builder.Services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
 
@@ -38,9 +48,8 @@ namespace PlatformService
 
             app.UseAuthorization();
 
-
             app.MapControllers();
-            PrepDb.PrepPopulation(app);
+            PrepDb.PrepPopulation(app, env.IsProduction());
             app.Run();
         }
     }

@@ -4,10 +4,16 @@ using System.Text.Json;
 
 namespace PlatformService.SyncDataServices.Http
 {
-    public class HttpCommandDataClient(HttpClient httpClient, IConfiguration configuration) : ICommandDataClient
+    public class HttpCommandDataClient : ICommandDataClient
     {
-        private readonly HttpClient _httpClient = httpClient;
-        private readonly IConfiguration _configuration = configuration;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
+
+        public HttpCommandDataClient(HttpClient httpClient, IConfiguration configuration)
+        {
+            _httpClient = httpClient;
+            _configuration = configuration;
+        }
 
         public async Task SendPlatformCommand(PlatformReadDto plat)
         {

@@ -9,14 +9,21 @@ namespace PlatformService.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PlatformsController(
-    IPlatformRepo repository,
-    IMapper mapper,
-    ICommandDataClient commandDataClient) : ControllerBase
+public class PlatformsController : ControllerBase
 {
-    private readonly IPlatformRepo _repository = repository;
-    private readonly IMapper _mapper = mapper;
-    private readonly ICommandDataClient _commandDataClient = commandDataClient;
+    private readonly IPlatformRepo _repository;
+    private readonly IMapper _mapper;
+    private readonly ICommandDataClient _commandDataClient;
+
+    public PlatformsController(
+        IPlatformRepo repository,
+        IMapper mapper,
+        ICommandDataClient commandDataClient)
+    {
+        _repository = repository;
+        _mapper = mapper;
+        _commandDataClient = commandDataClient;
+    }
 
     [HttpGet]
     public ActionResult<IEnumerable<PlatformReadDto>> GetPlatforms()
